@@ -445,5 +445,5 @@ sys_pipe(void)
 
 int sys_lseek(void)
 {
-	return 0;
+	return filelseek();
 }
