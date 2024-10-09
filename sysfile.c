@@ -443,7 +443,14 @@ sys_pipe(void)
   return 0;
 }
 
-int sys_lseek(void)
+int 
+sys_lseek(void)
 {
-	return filelseek();
+  struct file* f;
+	int fd, offset, whence;
+
+	if (argfd(0, &fd, &f) < 0 || argint(1, &offset) < 0 || argint(2, &whence) < 0)
+		return -1;
+		
+	return filelseek(f, offset, whence);
 }

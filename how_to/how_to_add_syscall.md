@@ -5,7 +5,7 @@ I'll showcase it by adding `filelseek`.
 
 #### Step 1
 
-`lseek` operates on files. That means I have to search for `sysfile.c`, `sysfile.h`, 
+`lseek` operates on files. That means I have to search for `sysfile.c`, `defs.h`, 
 `file.c`
 
 
