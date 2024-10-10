@@ -169,20 +169,18 @@ int filelseek(struct file* f, int offset, int whence){
     break;
   case SEEK_CUR:
     f->off += offset;
-    if (f->off > f->ip->size){
-      f->off = f->ip->size;
-    }
     break;
   case SEEK_END:
     f->off = f->ip->size + offset;
-    if (f->off > f->ip->size){
-      f->off = f->ip->size;
-    } else if (f->off < 0){
-      f->off = 0;
-    }
     break;
   default:
     return -1;
+  }
+
+  if (f->off > f->ip->size){
+      f->off = f->ip->size;
+  } else if (f->off < 0){
+      f->off = 0;
   }
 
 	return f->off;
