@@ -14,6 +14,7 @@
 
 #define MINOR_DEVNULL 0
 #define MINOR_DEVZERO 1
+#define MINOR_DEVMEM 2
 
 int 
 drvmemread(struct inode *ip, char *dst, uint off, int n)
@@ -27,7 +28,15 @@ drvmemread(struct inode *ip, char *dst, uint off, int n)
         memset(dst, 0, n);
         return n;
     }
-    return 0;
+    else if (ip->minor == MINOR_DEVMEM)
+    {
+        if ( off < EXTMEM || off + n > PHYSTOP){
+            return -1;
+        }
+        memmove(dst, (char*)P2V(off), n);
+        return n;
+    }
+    return -1;
 }
 
 int 
