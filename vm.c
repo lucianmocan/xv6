@@ -385,6 +385,56 @@ copyout(pde_t *pgdir, uint va, void *p, uint len)
   return 0;
 }
 
+int
+kmemread(char *dst, uint off, int n)
+{
+  struct proc *curproc = myproc();
+  pde_t *pgdir = curproc->pgdir;
+  pte_t *pte;
+  uint pa;
+  char* va;
+  int bytes_read = 0;
+
+  while(n > 0){
+    // search for pte
+    if ((pte = walkpgdir(pgdir, (void*)off, 0)) == 0 || !(*pte & PTE_P)){
+      memset(dst, 0, bytes_read);
+      return 0;
+    }
+    
+    // get physical address of pte
+    pa = PTE_ADDR(*pte); 
+
+    // check where we are in the page (if off > PGSIZE)
+    int distance = off % PGSIZE; 
+
+    // get in the page at the offset off + already read bytes
+    pa += distance;
+    
+    // how much space in the page do I have ?
+    int bytes_in_page = PGSIZE - distance;
+    // how much can I read on this page ? all or some
+    int to_read = (n > bytes_in_page) ? bytes_in_page : n;
+
+    // get the virtual address for the kernel
+    va = P2V(pa);
+
+    // copy data
+    memmove(dst, va, to_read);
+
+    // move ahead at the destination
+    dst += to_read;
+    // count number of bytes read (to return)
+    bytes_read += to_read;
+    // update offset
+    off += to_read;
+    // update number of bytes read (to stop the loop)
+    n -= to_read;
+  }
+
+  return bytes_read;
+}
+
 //PAGEBREAK!
 // Blank page.
 //PAGEBREAK!

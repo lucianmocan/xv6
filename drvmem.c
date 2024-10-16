@@ -15,6 +15,7 @@
 #define MINOR_DEVNULL 0
 #define MINOR_DEVZERO 1
 #define MINOR_DEVMEM 2
+#define MINOR_DEVKEM 3
 
 int 
 drvmemread(struct inode *ip, char *dst, uint off, int n)
@@ -36,6 +37,9 @@ drvmemread(struct inode *ip, char *dst, uint off, int n)
         memmove(dst, (char*)P2V(off), n);
         return n;
     }
+    else if (ip->minor == MINOR_DEVKEM){
+        return kmemread(dst, off, n);
+    }
     return -1;
 }
 
@@ -49,7 +53,7 @@ void
 drvmeminit(void)
 {
 
-    devsw[DEVNULL].read = drvmemread;
-    devsw[DEVNULL].write = drvmemwrite;
+    devsw[DEV].read = drvmemread;
+    devsw[DEV].write = drvmemwrite;
 
 }

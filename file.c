@@ -157,9 +157,16 @@ filewrite(struct file *f, char *addr, int n)
   panic("filewrite");
 }
 
+#define LSEEK_DEVKEM_MAX 0xFFFFFFFF
+
 int filelseek(struct file* f, int offset, int whence){
   
   if (f->type == FD_PIPE){
+    return -1;
+  }
+
+  // if offset bigger than 2^31 - 1 then reject
+  if (offset > LSEEK_DEVKEM_MAX){
     return -1;
   }
 
