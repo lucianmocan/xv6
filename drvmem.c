@@ -12,9 +12,21 @@
 #include "proc.h"
 #include "x86.h"
 
+#define MINOR_DEVNULL 0
+#define MINOR_DEVZERO 1
+
 int 
 drvmemread(struct inode *ip, char *dst, uint off, int n)
 {
+    if (ip->minor == MINOR_DEVNULL)
+    {
+        return 0;
+    }
+    else if (ip->minor == MINOR_DEVZERO)
+    {
+        memset(dst, 0, n);
+        return n;
+    }
     return 0;
 }
 
